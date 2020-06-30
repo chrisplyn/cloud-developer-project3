@@ -2,6 +2,8 @@ language: minimal
 
 sudo: required
 
+service: docker
+
 env:
   - DOCKER_COMPOSE_VERSION=1.26.0
 
@@ -14,11 +16,18 @@ install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+  - unzip awscli-bundle.zip
+  - sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
+
+after_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - aws eks --region ${AWS_REGION} update-kubeconfig --name ${AWS_EKS_CLUSTER}
 
 # Scripts to be run such as tests
-before_script:
-  - echo "no tests"
+# before_script:
+#   - echo "no tests"
 
-script:
-  - docker-compose -f udagram-deployment/docker/docker-compose-build.yaml build --parallel
+# script:
+#   - docker-compose -f udagram-deployment/docker/docker-compose-build.yaml build --parallel
 
