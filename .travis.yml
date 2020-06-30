@@ -43,5 +43,6 @@ script:
   - kubectl apply -f udagram-deployment/k8s/frontend-service.yaml
 
 after_success:
+  - "travis_wait 30 sleep 2 &"
   - kubectl get pods
   - kubectl get svc
