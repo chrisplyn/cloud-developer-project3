@@ -20,7 +20,7 @@ install:
   - unzip awscli-bundle.zip
   - sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 
-after_install:
+before_script:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - aws eks --region ${AWS_REGION} update-kubeconfig --name ${AWS_EKS_CLUSTER}
 
@@ -28,6 +28,6 @@ after_install:
 # before_script:
 #   - echo "no tests"
 
-# script:
-#   - docker-compose -f udagram-deployment/docker/docker-compose-build.yaml build --parallel
-
+script:
+  - docker-compose -f udagram-deployment/docker/docker-compose-build.yaml build --parallel
+  - docker-compose -f udagram-deployment/docker/docker-compose-build.yaml push
